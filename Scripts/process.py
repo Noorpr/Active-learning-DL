@@ -10,7 +10,7 @@ from modAL.uncertainty import uncertainty_sampling
 import numpy as np
 import matplotlib.pyplot as plt
 
-def train_model(model, train_loader, device="cpu", epochs=3):
+def train_model(model, train_loader, device, epochs=3):
     model.to(device)
     model.train()
     optimizer = optim.Adam(model.parameters(), lr=0.001)
@@ -24,10 +24,10 @@ def train_model(model, train_loader, device="cpu", epochs=3):
             loss.backward()
             optimizer.step()
 
-def test_model(model, test_loader, device="cpu"):
+def test_model(model, test_loader, device):
     model.eval()
     correct, total = 0, 0
-    with torch.no_grad():
+    with torch.inference_mode():
         for data, label in test_loader:
             data, label = data.to(device), label.to(device)
             outputs = model(data)
@@ -72,7 +72,7 @@ def query_uncertainty_sampling(model, unlabeled_indices, n_instances):
     all_probs = []
     for data, _ in loader:
         data = data.to(device)
-        with torch.no_grad():
+        with torch.inference_mode():
             outputs = model(data)
             probs = torch.nn.functional.softmax(outputs, dim=1)
         all_probs.append(probs.cpu().numpy())
