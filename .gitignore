@@ -1,3 +1,5 @@
 /.lightning_studio
 /.idea
 /.vscode
+data
+__pycache__
